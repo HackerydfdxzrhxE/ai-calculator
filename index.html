@@ -3,25 +3,56 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Advanced AI Calculator</title>
+  <title>Pro AI Calculator</title>
   <link rel="stylesheet" href="styles.css"/>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/11.11.0/math.min.js"></script>
 </head>
 <body>
   <div class="calculator">
-    <h1>🧠 AI Scientific Calculator</h1>
+    <h1>🧠 Pro AI Calculator</h1>
 
-    <textarea id="input" placeholder="Enter equation or ask: 'What is sin(90)?'"></textarea>
+    <textarea id="input" placeholder="Enter or say: 'sin(90)', 'What is 9+9'"></textarea>
 
     <div class="controls">
-      <button onclick="calculate()">Calculate</button>
-      <button onclick="startVoice()">🎤 Speak</button>
-      <button onclick="toggleDarkMode()">🌓 Dark Mode</button>
+      <button onclick="calculate()">=</button>
+      <button onclick="startVoice()">🎤</button>
+      <button onclick="toggleMode()">🧪 Mode</button>
+      <button onclick="toggleDarkMode()">🌓</button>
+    </div>
+
+    <div class="numpad" id="numpad">
+      <button onclick="insert('7')">7</button>
+      <button onclick="insert('8')">8</button>
+      <button onclick="insert('9')">9</button>
+      <button onclick="insert('/')">÷</button>
+      <button onclick="insert('4')">4</button>
+      <button onclick="insert('5')">5</button>
+      <button onclick="insert('6')">6</button>
+      <button onclick="insert('*')">×</button>
+      <button onclick="insert('1')">1</button>
+      <button onclick="insert('2')">2</button>
+      <button onclick="insert('3')">3</button>
+      <button onclick="insert('-')">−</button>
+      <button onclick="insert('0')">0</button>
+      <button onclick="insert('.')">.</button>
+      <button onclick="insert('+')">+</button>
+      <button onclick="clearInput()">C</button>
+    </div>
+
+    <div class="scientific" id="scientific" style="display:none;">
+      <button onclick="insert('sin(')">sin</button>
+      <button onclick="insert('cos(')">cos</button>
+      <button onclick="insert('tan(')">tan</button>
+      <button onclick="insert('sqrt(')">√</button>
+      <button onclick="insert('log(')">log</button>
+      <button onclick="insert('!')">!</button>
+      <button onclick="insert('^')">^</button>
+      <button onclick="insert('pi')">π</button>
     </div>
 
     <div id="result"></div>
+    <div class="history" id="history"></div>
   </div>
-
   <script src="script.js"></script>
 </body>
 </html>
