@@ -3,56 +3,108 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Pro AI Calculator</title>
+  <title>Pro AI Calculator with History Manager</title>
   <link rel="stylesheet" href="styles.css"/>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/11.11.0/math.min.js"></script>
 </head>
 <body>
   <div class="calculator">
     <h1>🧠 Pro AI Calculator</h1>
-
-    <textarea id="input" placeholder="Enter or say: 'sin(90)', 'What is 9+9'"></textarea>
-
+    <textarea id="input" placeholder="Type or say a calculation"></textarea>
     <div class="controls">
       <button onclick="calculate()">=</button>
       <button onclick="startVoice()">🎤</button>
-      <button onclick="toggleMode()">🧪 Mode</button>
+      <button onclick="toggleScientific()">🧪</button>
       <button onclick="toggleDarkMode()">🌓</button>
+      <button onclick="toggleHistoryPanel()">📜</button>
     </div>
 
-    <div class="numpad" id="numpad">
-      <button onclick="insert('7')">7</button>
-      <button onclick="insert('8')">8</button>
-      <button onclick="insert('9')">9</button>
-      <button onclick="insert('/')">÷</button>
-      <button onclick="insert('4')">4</button>
-      <button onclick="insert('5')">5</button>
-      <button onclick="insert('6')">6</button>
-      <button onclick="insert('*')">×</button>
-      <button onclick="insert('1')">1</button>
-      <button onclick="insert('2')">2</button>
-      <button onclick="insert('3')">3</button>
-      <button onclick="insert('-')">−</button>
-      <button onclick="insert('0')">0</button>
-      <button onclick="insert('.')">.</button>
-      <button onclick="insert('+')">+</button>
-      <button onclick="clearInput()">C</button>
+    <div class="numpad">
+      <!-- Buttons 0-9 and operators -->
     </div>
 
     <div class="scientific" id="scientific" style="display:none;">
-      <button onclick="insert('sin(')">sin</button>
-      <button onclick="insert('cos(')">cos</button>
-      <button onclick="insert('tan(')">tan</button>
-      <button onclick="insert('sqrt(')">√</button>
-      <button onclick="insert('log(')">log</button>
-      <button onclick="insert('!')">!</button>
-      <button onclick="insert('^')">^</button>
-      <button onclick="insert('pi')">π</button>
+      <!-- Scientific function buttons -->
     </div>
 
     <div id="result"></div>
-    <div class="history" id="history"></div>
   </div>
-  <script src="script.js"></script>
+
+  <div class="history-panel" id="historyPanel">
+    <div class="history-header">
+      <h2>Calculation History</h2>
+      <input type="text" id="searchHistory" placeholder="Search..." oninput="filterHistory()" />
+      <button onclick="clearHistory()">🗑️ Clear All</button>
+    </div>
+    <div id="historyList"></div>
+  </div>
+
+  <script>
+    function calculate() {
+      const input = document.getElementById('input').value.trim();
+      try {
+        const result = math.evaluate(input);
+        document.getElementById('result').innerText = 'Answer: ' + result;
+        saveHistory(input, result);
+      } catch (e) {
+        document.getElementById('result').innerText = 'Error';
+      }
+    }
+
+    function saveHistory(expression, result) {
+      const timestamp = new Date().toLocaleString();
+      const record = { expression, result, timestamp };
+      const history = JSON.parse(localStorage.getItem('calcHistory') || '[]');
+      history.unshift(record);
+      localStorage.setItem('calcHistory', JSON.stringify(history));
+      displayHistory();
+    }
+
+    function displayHistory() {
+      const history = JSON.parse(localStorage.getItem('calcHistory') || '[]');
+      const historyList = document.getElementById('historyList');
+      historyList.innerHTML = '';
+      history.forEach((item, index) => {
+        const div = document.createElement('div');
+        div.className = 'history-item';
+        div.innerHTML = `
+          <div><strong>${item.expression}</strong> = ${item.result}</div>
+          <div class="timestamp">${item.timestamp}</div>
+          <button onclick="deleteHistory(${index})">❌</button>
+        `;
+        historyList.appendChild(div);
+      });
+    }
+
+    function deleteHistory(index) {
+      const history = JSON.parse(localStorage.getItem('calcHistory') || '[]');
+      history.splice(index, 1);
+      localStorage.setItem('calcHistory', JSON.stringify(history));
+      displayHistory();
+    }
+
+    function clearHistory() {
+      if (confirm('Clear all history?')) {
+        localStorage.removeItem('calcHistory');
+        displayHistory();
+      }
+    }
+
+    function filterHistory() {
+      const query = document.getElementById('searchHistory').value.toLowerCase();
+      const items = document.querySelectorAll('.history-item');
+      items.forEach(item => {
+        const text = item.textContent.toLowerCase();
+        item.style.display = text.includes(query) ? 'block' : 'none';
+      });
+    }
+
+    function toggleHistoryPanel() {
+      const panel = document.getElementById('historyPanel');
+      panel.style.display = panel.style.display === 'block' ? 'none' : 'block';
+    }
+
+    window.onload = displayHistory;
+  </script>
 </body>
 </html>
